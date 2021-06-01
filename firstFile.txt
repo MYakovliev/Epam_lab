@@ -1,7 +1,7 @@
 1
 2
-3
-4
+3 - just a change for 8th step
+4 - just a change for 8th step
 5
 6 - this line is modified 7th step
 7
