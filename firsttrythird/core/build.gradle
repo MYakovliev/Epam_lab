@@ -1,0 +1,9 @@
+apply plugin: 'java'
+
+repositories{
+	mavenLocal()
+}
+
+dependencies {
+	 implementation "by.epam.lab:utils:1.3.5"
+}

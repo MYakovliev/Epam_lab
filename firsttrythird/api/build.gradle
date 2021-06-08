@@ -1,0 +1,21 @@
+apply plugin: 'java'
+
+repositories{
+	mavenCentral()
+	mavenLocal()
+}
+
+dependencies {
+	 implementation project(':core')
+}
+
+
+
+jar {
+	baseName = 'app'
+	manifest.attributes('Main-Class': 'by.epam.multi.App')
+	from {
+		duplicatesStrategy = 'INCLUDE'
+		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+	}
+}

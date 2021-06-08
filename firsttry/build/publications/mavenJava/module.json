@@ -1,0 +1,69 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "by.epam.lab",
+    "module": "utils",
+    "version": "1.3.5",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.0.2"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "utils-1.3.5.jar",
+          "url": "utils-1.3.5.jar",
+          "size": 306524,
+          "sha512": "9b85d55befc8c2c0b68c7ffb6e0eead6045ffa28a9004f08473b4926b5812fd800c1f2590d6a0142e8b46650d89e26bcbcc2e879fe7bd05b385f2bee2a8fa06e",
+          "sha256": "d711e9a67947b67e0fc1551fb464dab5baed2477374d88aba6d763fddfc09aa5",
+          "sha1": "bde14314e0fb90f5474c39cdecfcd10f5089cd88",
+          "md5": "27d7e81daa5d11d768306869c533c84c"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.apache.commons",
+          "module": "commons-lang3",
+          "version": {
+            "requires": "3.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "utils-1.3.5.jar",
+          "url": "utils-1.3.5.jar",
+          "size": 306524,
+          "sha512": "9b85d55befc8c2c0b68c7ffb6e0eead6045ffa28a9004f08473b4926b5812fd800c1f2590d6a0142e8b46650d89e26bcbcc2e879fe7bd05b385f2bee2a8fa06e",
+          "sha256": "d711e9a67947b67e0fc1551fb464dab5baed2477374d88aba6d763fddfc09aa5",
+          "sha1": "bde14314e0fb90f5474c39cdecfcd10f5089cd88",
+          "md5": "27d7e81daa5d11d768306869c533c84c"
+        }
+      ]
+    }
+  ]
+}
