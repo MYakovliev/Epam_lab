@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,7 +44,7 @@ class TagServiceImplTest {
         long expected = 45L;
         String name = "tag name";
         Mockito.doReturn(expected).when(tagDao).create(name);
-        long actual = tagService.create(name);
+        long actual = tagService.create(name, Locale.ENGLISH);
         assertEquals(expected, actual);
     }
 
@@ -76,7 +77,7 @@ class TagServiceImplTest {
         long id = 4;
         Tag expected = new Tag(id, "tag");
         Mockito.doReturn(Optional.of(expected)).when(tagDao).findById(id);
-        Tag actual = tagService.findById(id);
+        Tag actual = tagService.findById(id, Locale.ENGLISH);
         assertEquals(expected, actual);
     }
 }

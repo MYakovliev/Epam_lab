@@ -76,7 +76,7 @@ class CertificateServiceImplTest {
     void findById() {
         long id = 45;
         when(certificateDao.findById(id)).thenReturn(Optional.empty());
-        assertThrows(ServiceException.class, ()->certificateService.findById(id));
+        assertThrows(ServiceException.class, ()->certificateService.findById(id, Locale.ENGLISH));
     }
 
     @Test

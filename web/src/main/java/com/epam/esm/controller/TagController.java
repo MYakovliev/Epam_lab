@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/tags")
@@ -24,8 +25,8 @@ public class TagController {
     }
 
     @GetMapping("/{id}")
-    public Tag findById(@PathVariable("id") long id){
-        return tagService.findById(id);
+    public Tag findById(@PathVariable("id") long id, Locale locale){
+        return tagService.findById(id, locale);
     }
 
     @GetMapping("/search")
@@ -34,9 +35,9 @@ public class TagController {
     }
 
     @PostMapping
-    public Tag create(@RequestBody String name){
-        long id = tagService.create(name);
-        return tagService.findById(id);
+    public Tag create(@RequestBody Tag name, Locale locale){
+        long id = tagService.create(name.getName(), locale);
+        return tagService.findById(id, locale);
     }
 
     @DeleteMapping("/{id}")

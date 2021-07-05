@@ -10,6 +10,7 @@ import com.epam.esm.util.ErrorCode;
 import com.epam.esm.util.SortMode;
 import com.epam.esm.util.SortParameter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -21,11 +22,14 @@ import java.util.*;
 @Service
 public class CertificateServiceImpl implements CertificateService {
 
+    private static final String ID_NOT_FOUND_MESSAGE = "not_found_id_certificate";
     private static final int NOT_FOUND_ID_ERROR_CODE = ErrorCode.NOT_FOUND_ID.getCode();
     private static final String DELIMITER = ", ";
     private TransactionTemplate transactionTemplate;
     private CertificateDao certificateDao;
     private TagDao tagDao;
+    @Autowired
+    private MessageSource messageSource;
 
     @Autowired
     public CertificateServiceImpl(DataSource dataSource, CertificateDao certificateDao, TagDao tagDao) {
@@ -70,10 +74,11 @@ public class CertificateServiceImpl implements CertificateService {
         });
     }
 
-    public Certificate findById(long certificateId) {
+    public Certificate findById(long certificateId, Locale locale) {
         return transactionTemplate.execute(status -> {
             Certificate certificate = certificateDao.findById(certificateId)
-                    .orElseThrow(() -> new ServiceException(NOT_FOUND_ID_ERROR_CODE, String.format("Can't find certificate with id:%d", certificateId)));
+                    .orElseThrow(() -> new ServiceException(NOT_FOUND_ID_ERROR_CODE,
+                            messageSource.getMessage(ID_NOT_FOUND_MESSAGE, new Object[]{certificateId}, locale)));
             List<Tag> tags = tagDao.findTagsForCertificate(certificate.getId());
             certificate.setTags(tags);
             return certificate;

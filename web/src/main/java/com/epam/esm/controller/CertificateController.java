@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @RestController
@@ -27,8 +28,8 @@ public class CertificateController {
     }
 
     @GetMapping("/{id}")
-    public Certificate findById(@PathVariable("id") long id) {
-        return certificateService.findById(id);
+    public Certificate findById(@PathVariable("id") long id, Locale locale) {
+        return certificateService.findById(id, locale);
     }
 
     @GetMapping("/search")
@@ -44,18 +45,18 @@ public class CertificateController {
     }
 
     @PostMapping
-    public Certificate create(@RequestBody CertificateCreation certificateCreation) {
+    public Certificate create(@RequestBody CertificateCreation certificateCreation, Locale locale) {
         long id = certificateService.create(certificateCreation.getName(), certificateCreation.getDescription(),
                 certificateCreation.getPrice(), certificateCreation.getDuration(), certificateCreation.getTags());
-        return certificateService.findById(id);
+        return certificateService.findById(id, locale);
     }
 
     @PutMapping("/{id}")
-    public Certificate update(@RequestBody CertificateCreation certificate, @PathVariable("id") long id) {
-        certificateService.findById(id);
+    public Certificate update(@RequestBody CertificateCreation certificate, @PathVariable("id") long id, Locale locale) {
+        certificateService.findById(id, locale);
         certificateService.update(id, certificate.getName(), certificate.getDescription(),
                 certificate.getPrice(), certificate.getDuration(), certificate.getTags());
-        return certificateService.findById(id);
+        return certificateService.findById(id, locale);
     }
 
     @DeleteMapping("/{id}")

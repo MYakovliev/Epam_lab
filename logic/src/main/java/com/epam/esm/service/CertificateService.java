@@ -4,6 +4,7 @@ import com.epam.esm.entity.Certificate;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public interface CertificateService {
@@ -13,7 +14,7 @@ public interface CertificateService {
 
     void delete(long certificateId);
 
-    Certificate findById(long certificateId);
+    Certificate findById(long certificateId, Locale locale);
 
     List<Certificate> findByTagNames(List<String> tagNames, Map<String, String> sortTypes);
 
