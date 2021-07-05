@@ -37,7 +37,7 @@ public class SpringConfigLogic implements WebMvcConfigurer {
     public MessageSource messageSource(){
         ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
         source.setBasename("classpath:exception");
-        source.setDefaultEncoding("UTF-8");
+        source.setDefaultEncoding("windows-1251");
         return source;
     }
 
