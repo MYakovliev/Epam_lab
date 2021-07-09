@@ -39,20 +39,20 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @SuppressWarnings("ConstantConditions")
-    public long create(String name, String description, BigDecimal price, int duration, List<String> tags) {
+    public long create(String name, String description, BigDecimal price, int duration, List<String> tags, Locale locale) {
         return transactionTemplate.execute(status -> {
-            long certificateId = certificateDao.create(name, description, price, duration);
+            long certificateId = certificateDao.create(name, description, price, duration, locale);
             for (String tagName : tags) {
                 long tagId;
                 Optional<Tag> tag = tagDao.findByName(tagName).stream().filter(t -> t.getName().equalsIgnoreCase(tagName)).findAny();
-                tagId = tag.map(Tag::getId).orElseGet(() -> tagDao.create(tagName.toLowerCase(Locale.ROOT)));
+                tagId = tag.map(Tag::getId).orElseGet(() -> tagDao.create(tagName.toLowerCase(Locale.ROOT), locale));
                 tagDao.setTagForCertificate(certificateId, tagId);
             }
             return certificateId;
         });
     }
 
-    public void update(long id, String name, String description, BigDecimal price, int duration, List<String> tags) {
+    public void update(long id, String name, String description, BigDecimal price, int duration, List<String> tags, Locale locale) {
         transactionTemplate.executeWithoutResult(transactionStatus -> {
             certificateDao.update(id, name, description, price, duration);
             if (tags != null) {
@@ -60,7 +60,7 @@ public class CertificateServiceImpl implements CertificateService {
                 for (String tagName : tags) {
                     long tagId;
                     Optional<Tag> tag = tagDao.findByName(tagName).stream().filter(t -> t.getName().equalsIgnoreCase(tagName)).findAny();
-                    tagId = tag.map(Tag::getId).orElseGet(() -> tagDao.create(tagName.toLowerCase(Locale.ROOT)));
+                    tagId = tag.map(Tag::getId).orElseGet(() -> tagDao.create(tagName.toLowerCase(Locale.ROOT), locale));
                     tagDao.setTagForCertificate(id, tagId);
                 }
             }

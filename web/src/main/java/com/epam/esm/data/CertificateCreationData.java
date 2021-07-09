@@ -1,16 +1,16 @@
-package com.epam.esm.util;
+package com.epam.esm.data;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-public class CertificateCreation {
+public class CertificateCreationData {
     private String name;
     private String description;
     private BigDecimal price;
     private int duration;
     private List<String> tags;
 
-    public CertificateCreation() {
+    public CertificateCreationData() {
     }
 
     public String getName() {

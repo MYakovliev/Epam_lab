@@ -8,9 +8,9 @@ import java.util.Locale;
 import java.util.Map;
 
 public interface CertificateService {
-    long create(String name, String description, BigDecimal price, int duration, List<String> tags);
+    long create(String name, String description, BigDecimal price, int duration, List<String> tags, Locale locale);
 
-    void update(long id, String name, String description, BigDecimal price, int duration, List<String> tags);
+    void update(long id, String name, String description, BigDecimal price, int duration, List<String> tags, Locale locale);
 
     void delete(long certificateId);
 

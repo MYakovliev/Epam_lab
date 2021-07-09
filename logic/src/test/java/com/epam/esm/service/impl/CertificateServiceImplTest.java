@@ -48,9 +48,9 @@ class CertificateServiceImplTest {
     void create(Certificate certificate) {
         long expected = certificate.getId();
         when(certificateDao.create(certificate.getName(), certificate.getDescription(),
-                certificate.getPrice(), certificate.getDuration())).thenReturn(expected);
+                certificate.getPrice(), certificate.getDuration(), Locale.ENGLISH)).thenReturn(expected);
         long actual = certificateService.create(certificate.getName(), certificate.getDescription(),
-                certificate.getPrice(), certificate.getDuration(), new ArrayList<>());
+                certificate.getPrice(), certificate.getDuration(), new ArrayList<>(), Locale.ENGLISH);
         assertEquals(expected, actual);
     }
 
@@ -62,7 +62,7 @@ class CertificateServiceImplTest {
                         certificate.getPrice(), certificate.getDuration());
         assertThrows(ServiceException.class,
                 ()->certificateService.update(certificate.getId(), certificate.getName(), certificate.getDescription(),
-                        certificate.getPrice(), certificate.getDuration(), new ArrayList<>()));
+                        certificate.getPrice(), certificate.getDuration(), new ArrayList<>(), Locale.ENGLISH));
     }
 
     @Test

@@ -43,7 +43,7 @@ class TagServiceImplTest {
     void create() {
         long expected = 45L;
         String name = "tag name";
-        Mockito.doReturn(expected).when(tagDao).create(name);
+        Mockito.doReturn(expected).when(tagDao).create(name, Locale.ENGLISH);
         long actual = tagService.create(name, Locale.ENGLISH);
         assertEquals(expected, actual);
     }

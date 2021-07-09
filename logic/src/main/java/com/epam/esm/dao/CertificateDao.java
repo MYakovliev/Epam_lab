@@ -4,10 +4,11 @@ import com.epam.esm.entity.Certificate;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 public interface CertificateDao {
-    long create(String name, String description, BigDecimal price, int duration);
+    long create(String name, String description, BigDecimal price, int duration, Locale locale);
 
     List<Certificate> findAll(String sortParams);
 

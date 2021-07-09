@@ -3,10 +3,11 @@ package com.epam.esm.dao;
 import com.epam.esm.entity.Tag;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 public interface TagDao {
-    long create(String name);
+    long create(String name, Locale locale);
 
     List<Tag> findAll();
 

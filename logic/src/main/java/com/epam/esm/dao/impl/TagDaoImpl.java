@@ -2,7 +2,10 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.service.exception.ServiceException;
+import com.epam.esm.util.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -13,14 +16,18 @@ import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Repository
 public class TagDaoImpl implements TagDao {
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private MessageSource messageSource;
+    private final int ERROR_CODE = ErrorCode.NOT_FOUND_ID.getCode();
+    private static final String COULD_NOT_GENERATE_ID = "could_not_create_id_tag";
 
     private static final String ANY_SQL_SYMBOL = "%";
-
     private static final String CREATE_TAG = "INSERT INTO tag (name) VALUES (?)";
     private static final String FIND_TAG_BY_ID = "SELECT id, name FROM tag WHERE id=?";
     private static final String FIND_ALL_TAG = "SELECT id, name FROM tag";
@@ -37,13 +44,17 @@ public class TagDaoImpl implements TagDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public long create(String name) {
+    public long create(String name, Locale locale) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement statement = con.prepareStatement(CREATE_TAG, Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, name);
             return statement;
         }, keyHolder);
+        if (keyHolder.getKey() == null){
+            throw new ServiceException(ERROR_CODE,
+                    messageSource.getMessage(COULD_NOT_GENERATE_ID, null, locale));
+        }
         return keyHolder.getKey().longValue();
     }
 

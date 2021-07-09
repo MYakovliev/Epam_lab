@@ -2,7 +2,7 @@ package com.epam.esm.controller;
 
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.service.CertificateService;
-import com.epam.esm.util.CertificateCreation;
+import com.epam.esm.data.CertificateCreationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -45,17 +45,17 @@ public class CertificateController {
     }
 
     @PostMapping
-    public Certificate create(@RequestBody CertificateCreation certificateCreation, Locale locale) {
-        long id = certificateService.create(certificateCreation.getName(), certificateCreation.getDescription(),
-                certificateCreation.getPrice(), certificateCreation.getDuration(), certificateCreation.getTags());
+    public Certificate create(@RequestBody CertificateCreationData certificateCreationData, Locale locale) {
+        long id = certificateService.create(certificateCreationData.getName(), certificateCreationData.getDescription(),
+                certificateCreationData.getPrice(), certificateCreationData.getDuration(), certificateCreationData.getTags(), locale);
         return certificateService.findById(id, locale);
     }
 
     @PutMapping("/{id}")
-    public Certificate update(@RequestBody CertificateCreation certificate, @PathVariable("id") long id, Locale locale) {
+    public Certificate update(@RequestBody CertificateCreationData certificate, @PathVariable("id") long id, Locale locale) {
         certificateService.findById(id, locale);
         certificateService.update(id, certificate.getName(), certificate.getDescription(),
-                certificate.getPrice(), certificate.getDuration(), certificate.getTags());
+                certificate.getPrice(), certificate.getDuration(), certificate.getTags(), locale);
         return certificateService.findById(id, locale);
     }
 

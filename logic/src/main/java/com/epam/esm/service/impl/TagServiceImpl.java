@@ -21,7 +21,6 @@ public class TagServiceImpl implements TagService {
     private static final String ID_NOT_FOUND_MESSAGE = "not_found_id_tag";
     private static final String ALREADY_EXISTS_MESSAGE = "already_exists_tag";
     private static final int NOT_FOUND_ID_ERROR_CODE = ErrorCode.NOT_FOUND_ID.getCode();
-    private static final int NOT_FOUND_NAME_ERROR_CODE = ErrorCode.NOT_FOUND_NAME.getCode();
     private static final int ALREADY_EXISTS = ErrorCode.ALREADY_EXISTS.getCode();
     private TransactionTemplate transactionTemplate;
     private TagDao tagDao;
@@ -40,7 +39,7 @@ public class TagServiceImpl implements TagService {
             throw new ServiceException(ALREADY_EXISTS,
                     messageSource.getMessage(ALREADY_EXISTS_MESSAGE, new Object[]{name}, locale));
         }
-        return tagDao.create(name.toLowerCase(Locale.ROOT));
+        return tagDao.create(name.toLowerCase(Locale.ROOT), locale);
     }
 
     public void delete(long tagId) {

@@ -2,7 +2,10 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.CertificateDao;
 import com.epam.esm.entity.Certificate;
+import com.epam.esm.service.exception.ServiceException;
+import com.epam.esm.util.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -16,15 +19,19 @@ import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Repository
 public class CertificateDaoImpl implements CertificateDao {
     private final JdbcTemplate jdbcTemplate;
     private final TransactionTemplate transactionTemplate;
+    @Autowired
+    private MessageSource messageSource;
+    private final int ERROR_CODE = ErrorCode.NOT_FOUND_ID.getCode();
+    private static final String COULD_NOT_GENERATE_ID = "could_not_create_id_certificate";
 
     private static final String ANY_SQL_SYMBOL = "%";
-
     private static final String CREATE_CERTIFICATE = "INSERT INTO gift_certificate " +
             "(name, description, price, duration, create_date, last_update_date)" +
             "VALUES (?, ?, ?, ? , NOW(), NOW())";
@@ -59,7 +66,7 @@ public class CertificateDaoImpl implements CertificateDao {
         this.transactionTemplate = new TransactionTemplate(new JdbcTransactionManager(dataSource));
     }
 
-    public long create(String name, String description, BigDecimal price, int duration) {
+    public long create(String name, String description, BigDecimal price, int duration, Locale locale) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement statement = con.prepareStatement(CREATE_CERTIFICATE, Statement.RETURN_GENERATED_KEYS);
@@ -69,6 +76,10 @@ public class CertificateDaoImpl implements CertificateDao {
             statement.setInt(4, duration);
             return statement;
         }, keyHolder);
+        if (keyHolder.getKey() == null){
+            throw new ServiceException(ERROR_CODE,
+                    messageSource.getMessage(COULD_NOT_GENERATE_ID, null, locale));
+        }
         return keyHolder.getKey().longValue();
     }
 

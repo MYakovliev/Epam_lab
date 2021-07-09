@@ -12,7 +12,7 @@ public class Initializer extends AbstractAnnotationConfigDispatcherServletInitia
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class[]{TestConfig.class, SpringConfigLogic.class};
+        return new Class[]{TestConfig.class, SpringConfig.class};
     }
 
     @Override

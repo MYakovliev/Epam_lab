@@ -20,7 +20,7 @@ import java.util.Locale;
 @PropertySource({"classpath:database.properties"})
 @EnableWebMvc
 @Profile("main")
-public class SpringConfigLogic implements WebMvcConfigurer {
+public class SpringConfig implements WebMvcConfigurer {
 
     @Bean
     public DataSource dataSource(@Value("${driver}") String driver, @Value("${url}") String url,
