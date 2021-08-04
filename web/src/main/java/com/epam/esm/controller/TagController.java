@@ -39,6 +39,11 @@ public class TagController {
         return addLinks(result, search, page, amount);
     }
 
+    @GetMapping("/super")
+    public Tag findSuper(){
+        return tagService.findMostImportant();
+    }
+
     @GetMapping("/{id}")
     public EntityModel<Tag> findById(@PathVariable("id") long id, Locale locale){
         Tag tag = tagService.findById(id, locale);

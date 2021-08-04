@@ -31,7 +31,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public long create(Order order) {
-        order.setOrderTime(new Date());
         logger.info("order:{}", order);
         return orderDao.create(order);
     }
