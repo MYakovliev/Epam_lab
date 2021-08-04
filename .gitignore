@@ -16,7 +16,8 @@ logic/src/main/resources/setup.sql
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
-
+/gradlew.bat
+/*.log
 ### IntelliJ IDEA ###
 .idea
 *.iws
