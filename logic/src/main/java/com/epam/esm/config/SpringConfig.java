@@ -26,7 +26,6 @@ public class SpringConfig implements WebMvcConfigurer {
         LocalSessionFactoryBean factory = new LocalSessionFactoryBean();
         factory.setDataSource(dataSource);
         factory.setPackagesToScan(PACKAGES_TO_SCAN);
-
         return factory;
     }
 

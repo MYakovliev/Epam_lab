@@ -29,12 +29,6 @@ public class OrderDaoImpl implements OrderDao {
     public long create(Order order) {
         try(Session session = factory.openSession()){
             session.beginTransaction();
-            long userId = order.getUser().getId();
-            long certificateId = order.getCertificate().getId();
-            order.setUser(session.get(User.class, userId));
-            order.setCertificate(session.get(Certificate.class, certificateId));
-            order.setOrderTime(new Date());
-            order.setPrice(order.getCertificate().getPrice());
             order.setOrderTime(new Date());
             logger.info("order:{}", order);
             long id = (Long) session.save(order);

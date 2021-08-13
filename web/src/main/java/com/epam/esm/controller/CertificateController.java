@@ -92,7 +92,9 @@ public class CertificateController {
     private CollectionModel<EntityModel<Certificate>> addLinks(List<Certificate> certificates, CertificateSelectionData selectionData) {
         List<EntityModel<Certificate>> entityModels = new ArrayList<>();
         for (Certificate certificate : certificates) {
-            Link link = linkTo(CertificateController.class).slash(certificate.getId()).withSelfRel();
+            Link link = linkTo(CertificateController.class)
+                    .slash(certificate.getId())
+                    .withSelfRel();
             entityModels.add(EntityModel.of(certificate).add(link));
         }
         CollectionModel<EntityModel<Certificate>> collection = CollectionModel.of(entityModels);
@@ -109,19 +111,23 @@ public class CertificateController {
         if (page > 1) {
             Link previous = linkTo(methodOn(CertificateController.class)
                     .findAll(tags, selectionData.getSearch(),
-                            selectionData.getStringSorting(), page - 1, amountPerPage)).withRel("previous");
+                            selectionData.getStringSorting(), page - 1, amountPerPage))
+                    .withRel("previous");
             Link first = linkTo(methodOn(CertificateController.class)
                     .findAll(tags, selectionData.getSearch(),
-                            selectionData.getStringSorting(), 1, amountPerPage)).withRel("first");
+                            selectionData.getStringSorting(), 1, amountPerPage))
+                    .withRel("first");
             collection.add(previous, first);
         }
         if (page < pageAmount) {
             Link next = linkTo(methodOn(CertificateController.class)
                     .findAll(tags, selectionData.getSearch(),
-                            selectionData.getStringSorting(), page + 1, amountPerPage)).withRel("next");
+                            selectionData.getStringSorting(), page + 1, amountPerPage))
+                    .withRel("next");
             Link last = linkTo(methodOn(CertificateController.class)
                     .findAll(tags, selectionData.getSearch(),
-                            selectionData.getStringSorting(), pageAmount, amountPerPage)).withRel("last");
+                            selectionData.getStringSorting(), pageAmount, amountPerPage))
+                    .withRel("last");
             collection.add(next, last);
         }
     }

@@ -1,6 +1,5 @@
 package com.epam.esm;
 
-import com.epam.esm.dao.OrderDao;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;

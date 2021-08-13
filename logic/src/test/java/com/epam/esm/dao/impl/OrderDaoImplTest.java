@@ -4,6 +4,7 @@ import com.epam.esm.config.TestConfig;
 import com.epam.esm.dao.OrderDao;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Order;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,11 +29,14 @@ class OrderDaoImplTest {
     @DirtiesContext
     void create() {
         long expected = 9;
+        List<Tag> tags = Arrays.asList(new Tag(1, "tag1"), new Tag(4, "tag4"), new Tag(6, "tag6"));
         Certificate certificate = new Certificate(1, "gift 1", "description 1",  BigDecimal.valueOf(10.99), 10);
+        certificate.setTags(tags);
         User user = new User(1, "user1");
         Order order = new Order();
         order.setUser(user);
         order.setCertificate(certificate);
+        order.setPrice(certificate.getPrice());
         long actual = orderDao.create(order);
         assertEquals(expected, actual);
     }

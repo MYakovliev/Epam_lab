@@ -5,14 +5,10 @@ import com.epam.esm.entity.Order;
 import com.epam.esm.entity.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -94,6 +90,29 @@ public class UserDaoImpl implements UserDao {
             }
             criteria.select(builder.count(root));
             return session.createQuery(criteria).getSingleResult();
+        }
+    }
+
+    @Override
+    public Optional<User> findSuperUser() {
+        try (Session session = factory.openSession()){
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<User> userCriteria = builder.createQuery(User.class);
+            Root<Order> orderRoot = userCriteria.from(Order.class);
+            Join<Order, User> join = orderRoot.join("user");
+            Subquery<Long> subquery = userCriteria.subquery(Long.class);
+            Root<Order> rootSub = subquery.from(Order.class);
+            Join<Order, User> joinSub = rootSub.join("user");
+            subquery.groupBy(joinSub.get("id"));
+            userCriteria.groupBy(join.get("id"));
+            userCriteria.having(builder.greaterThan(builder.sum(orderRoot.get("price")),
+                    builder.all(subquery
+                            .select(builder.count(rootSub.get("price"))))));
+            userCriteria.select(join.get("id"));
+            return Optional.ofNullable(session.createQuery(userCriteria)
+                    .setFirstResult(0)
+                    .setMaxResults(1)
+                    .getSingleResult());
         }
     }
 }

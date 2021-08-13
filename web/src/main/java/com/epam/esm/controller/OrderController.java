@@ -87,7 +87,8 @@ public class OrderController {
         List<EntityModel<Order>> entityModels = new ArrayList<>();
         for (Order order : orders) {
             Link selfLink = linkTo(OrderController.class)
-                    .slash(order.getId()).withSelfRel();
+                    .slash(order.getId())
+                    .withSelfRel();
             EntityModel<Order> model = EntityModel.of(order);
             model.add(selfLink);
             entityModels.add(model);
@@ -102,16 +103,20 @@ public class OrderController {
         int pageAmount = (int) ((amount + amountPerPage - 1) / amountPerPage);
         if (page > 1) {
             Link previous = linkTo(methodOn(OrderController.class)
-                    .findAll(page - 1, amountPerPage)).withRel("previous");
+                    .findAll(page - 1, amountPerPage))
+                    .withRel("previous");
             Link first = linkTo(methodOn(OrderController.class)
-                    .findAll(1, amountPerPage)).withRel("first");
+                    .findAll(1, amountPerPage))
+                    .withRel("first");
             collection.add(previous, first);
         }
         if (page < pageAmount) {
             Link next = linkTo(methodOn(OrderController.class)
-                    .findAll(page + 1, amountPerPage)).withRel("next");
+                    .findAll(page + 1, amountPerPage))
+                    .withRel("next");
             Link last = linkTo(methodOn(OrderController.class)
-                    .findAll(pageAmount, amountPerPage)).withRel("last");
+                    .findAll(pageAmount, amountPerPage))
+                    .withRel("last");
             collection.add(next, last);
         }
     }

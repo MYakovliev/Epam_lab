@@ -3,7 +3,6 @@ package com.epam.esm.dao;
 import com.epam.esm.entity.Tag;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 public interface TagDao {
@@ -17,7 +16,7 @@ public interface TagDao {
 
     void delete(long tagId);
 
-    Tag findMostImportant();
+    Tag findSuperTag(long userId);
 
     long countAll(String name);
 }

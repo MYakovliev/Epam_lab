@@ -5,19 +5,18 @@ import com.epam.esm.entity.Tag;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.util.ErrorCode;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionTemplate;
 
-import javax.sql.DataSource;
 import java.util.List;
 import java.util.Locale;
 
 @Service
 public class TagServiceImpl implements TagService {
-
+    private static final Logger logger = LogManager.getLogger();
     private static final String ID_NOT_FOUND_MESSAGE = "not_found_id_tag";
     private static final String ALREADY_EXISTS_MESSAGE = "already_exists_tag";
     private static final int NOT_FOUND_ID_ERROR_CODE = ErrorCode.NOT_FOUND_ID.getCode();
@@ -33,7 +32,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public long create(String name, Locale locale) {
-        boolean exists = tagDao.findByName(name, 1, Integer.MAX_VALUE).stream()
+        boolean exists = tagDao.findByName(name, 0, Integer.MAX_VALUE).stream()
                 .anyMatch(tag -> tag.getName().equalsIgnoreCase(name));
         if (exists){
             throw new ServiceException(ALREADY_EXISTS,
@@ -67,8 +66,8 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Tag findMostImportant() {
-        return tagDao.findMostImportant();
+    public Tag findSuperTag(long userId) {
+        return tagDao.findSuperTag(userId);
     }
 
     @Override

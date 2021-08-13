@@ -15,4 +15,6 @@ public interface UserDao {
     void delete(long userId);
 
     long countAll(String name);
+
+    Optional<User> findSuperUser();
 }

@@ -4,7 +4,6 @@ import com.epam.esm.dao.CertificateDao;
 import com.epam.esm.data.CertificateSelectionData;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.entity.Tag;
-import com.epam.esm.entity.User;
 import com.epam.esm.util.SortMode;
 import com.epam.esm.util.SortParameter;
 import org.apache.logging.log4j.LogManager;

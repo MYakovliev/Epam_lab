@@ -16,7 +16,7 @@ public interface TagService {
 
     Tag findById(long tagId, Locale locale);
 
-    Tag findMostImportant();
+    Tag findSuperTag(long userId);
 
     long countAll(String name);
 }

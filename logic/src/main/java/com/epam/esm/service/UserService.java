@@ -15,4 +15,6 @@ public interface UserService {
     void delete(long userId);
 
     long countAll(String name);
+
+    User findSuperUser(Locale locale);
 }

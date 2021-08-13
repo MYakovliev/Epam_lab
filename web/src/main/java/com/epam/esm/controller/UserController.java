@@ -57,7 +57,8 @@ public class UserController {
         List<EntityModel<User>> entityModels = new ArrayList<>();
         for (User user : users) {
             Link selfLink = linkTo(UserController.class)
-                    .slash(user.getId()).withSelfRel();
+                    .slash(user.getId())
+                    .withSelfRel();
             EntityModel<User> model = EntityModel.of(user);
             model.add(selfLink);
             entityModels.add(model);
@@ -72,16 +73,20 @@ public class UserController {
         int pageAmount = (int) ((amount + amountPerPage - 1) / amountPerPage);
         if (page > 1) {
             Link previous = linkTo(methodOn(UserController.class)
-                    .findAll(name, page - 1, amountPerPage)).withRel("previous");
+                    .findAll(name, page - 1, amountPerPage))
+                    .withRel("previous");
             Link first = linkTo(methodOn(UserController.class)
-                    .findAll(name, 1, amountPerPage)).withRel("first");
+                    .findAll(name, 1, amountPerPage))
+                    .withRel("first");
             collection.add(previous, first);
         }
         if (page < pageAmount) {
             Link next = linkTo(methodOn(UserController.class)
-                    .findAll(name, page + 1, amountPerPage)).withRel("next");
+                    .findAll(name, page + 1, amountPerPage))
+                    .withRel("next");
             Link last = linkTo(methodOn(UserController.class)
-                    .findAll(name, pageAmount, amountPerPage)).withRel("last");
+                    .findAll(name, pageAmount, amountPerPage))
+                    .withRel("last");
             collection.add(next, last);
         }
     }

@@ -5,7 +5,6 @@ import com.epam.esm.dao.TagDao;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.service.TagService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -76,8 +75,8 @@ class TagServiceImplTest {
     @Test
     void findMostImportant() {
         Tag expected = new Tag(1, "1");
-        when(tagDao.findMostImportant()).thenReturn(expected);
-        Tag actual = tagService.findMostImportant();
+        when(tagDao.findSuperTag(1)).thenReturn(expected);
+        Tag actual = tagService.findSuperTag(1);
         assertEquals(expected, actual);
     }
 }

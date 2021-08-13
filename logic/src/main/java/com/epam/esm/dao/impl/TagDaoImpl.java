@@ -79,12 +79,12 @@ public class TagDaoImpl implements TagDao {
         }
     }
 
-    public long countAll(String name){
-        try (Session session = factory.openSession()){
+    public long countAll(String name) {
+        try (Session session = factory.openSession()) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<Long> criteria = builder.createQuery(Long.class);
             Root<Tag> root = criteria.from(Tag.class);
-            if (name != null && !name.isEmpty()){
+            if (name != null && !name.isEmpty()) {
                 criteria.where(builder.like(root.get(NAME_FIELD), ANY_SQL_SYMBOL + name + ANY_SQL_SYMBOL));
             }
             criteria.select(builder.count(root));
@@ -92,26 +92,9 @@ public class TagDaoImpl implements TagDao {
         }
     }
 
-    public Tag findMostImportant(){
-        try (Session session = factory.openSession()){
+    public Tag findSuperTag(long userId) {
+        try (Session session = factory.openSession()) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
-            CriteriaQuery<Long> userCriteria = builder.createQuery(Long.class);
-            Root<Order> orderRoot = userCriteria.from(Order.class);
-            Join<Order, User> join = orderRoot.join("user");
-            Subquery<Long> subquery = userCriteria.subquery(Long.class);
-            Root<Order> rootSub = subquery.from(Order.class);
-            Join<Order, User> joinSub = rootSub.join("user");
-            subquery.groupBy(joinSub.get("id"));
-            userCriteria.groupBy(join.get("id"));
-            userCriteria.having(builder.greaterThan(builder.sum(orderRoot.get("price")),
-                    builder.all(subquery
-                            .select(builder.count(rootSub.get("price"))))));
-            userCriteria.select(join.get("id"));
-            long userId = session.createQuery(userCriteria)
-                    .setFirstResult(0)
-                    .setMaxResults(1)
-                    .getSingleResult();
-
             CriteriaQuery<Tag> tagCriteria = builder.createQuery(Tag.class);
             Root<Order> orderRootPrimary = tagCriteria.from(Order.class);
             Join<Order, User> userJoinPrimary = orderRootPrimary.join("user");
