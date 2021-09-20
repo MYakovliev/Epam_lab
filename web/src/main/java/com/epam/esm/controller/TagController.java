@@ -7,6 +7,7 @@ import com.epam.esm.entity.User;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
@@ -35,13 +36,13 @@ public class TagController {
     public CollectionModel<EntityModel<Tag>> findAll(@RequestParam(name = "search", required = false) String search,
                                                      @RequestParam(name = "page", required = false, defaultValue = "1") int page,
                                                      @RequestParam(name = "amount", required = false, defaultValue = "20") int amount){
-        List<Tag> result;
+        Page<Tag> result;
         if (search == null || search.isEmpty()){
             result = tagService.findAll(page, amount);
         } else {
             result = tagService.findByName(search, page, amount);
         }
-        return addLinks(result, search, page, amount);
+        return addLinks(result.getContent(), search, page, amount, result.getTotalPages());
     }
 
     @GetMapping("/super")
@@ -59,8 +60,7 @@ public class TagController {
 
     @PostMapping
     public EntityModel<Tag> create(@RequestBody Tag name, Locale locale){
-        long id = tagService.create(name.getName(), locale);
-        Tag tag = tagService.findById(id, locale);
+        Tag tag = tagService.create(name.getName(), locale);
         return EntityModel.of(tag);
     }
 
@@ -90,7 +90,7 @@ public class TagController {
         return model;
     }
 
-    private CollectionModel<EntityModel<Tag>> addLinks(List<Tag> tags, String name, int page, int amount){
+    private CollectionModel<EntityModel<Tag>> addLinks(List<Tag> tags, String name, int page, int amount, int pageAmount){
         List<EntityModel<Tag>> entityModelList = new ArrayList<>();
         for (Tag tag : tags) {
             EntityModel<Tag> entityModel = EntityModel.of(tag);
@@ -101,13 +101,12 @@ public class TagController {
             entityModelList.add(entityModel);
         }
         CollectionModel<EntityModel<Tag>> collection = CollectionModel.of(entityModelList);
-        addPagingLinks(collection, name, page, amount);
+        addPagingLinks(collection, name, page, amount, pageAmount);
         return collection;
     }
 
-    private void addPagingLinks(CollectionModel<EntityModel<Tag>> collection, String name, int page, int amountPerPage) {
-        long amount = tagService.countAll(name);
-        int pageAmount = (int) ((amount + amountPerPage - 1) / amountPerPage);
+    private void addPagingLinks(CollectionModel<EntityModel<Tag>> collection, String name,
+                                int page, int amountPerPage, int pageAmount) {
         if (page > 1) {
             Link previous = linkTo(methodOn(TagController.class)
                     .findAll(name, page - 1, amountPerPage))

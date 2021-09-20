@@ -9,12 +9,15 @@ import com.epam.esm.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -39,18 +42,22 @@ public class OrderController {
     }
 
     @PostMapping
-    public EntityModel<Order> create(@RequestBody Order order, Locale locale){
-        map(order, locale);
-        long id = orderService.create(order);
-        Order order1 = orderService.findById(id, locale);
-        return addFindCertificateLink(order1);
+    @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
+    public EntityModel<Order> create(Principal principal, @RequestBody Order order, Locale locale){
+        String name = principal.getName();
+        User user = userService.findByLogin(name);
+        order.setUser(user);
+        Certificate certificate = certificateService.findById(order.getCertificate().getId(), Locale.ENGLISH);
+        order.setCertificate(certificate);
+        Order orders = orderService.create(order);
+        return addFindCertificateLink(orders);
     }
 
     @GetMapping
     public CollectionModel<EntityModel<Order>> findAll(@RequestParam(name = "page", required = false, defaultValue = "1") int page,
                                                        @RequestParam(name = "amount", required = false, defaultValue = "20") int amountPerPage) {
-        List<Order> result = orderService.findAll(page, amountPerPage);
-        return addLinks(result, page, amountPerPage);
+        Page<Order> result = orderService.findAll(page, amountPerPage);
+        return addLinks(result.getContent(), page, amountPerPage, result.getTotalPages());
     }
 
 
@@ -75,15 +82,7 @@ public class OrderController {
         return HttpStatus.OK;
     }
 
-    private void map(Order order, Locale locale){
-        Certificate certificate = certificateService.findById(order.getCertificate().getId(), locale);
-        order.setPrice(certificate.getPrice());
-        order.setCertificate(certificate);
-        User user = userService.findById(order.getUser().getId(), locale);
-        order.setUser(user);
-    }
-
-    private CollectionModel<EntityModel<Order>> addLinks(List<Order> orders, int page, int amountPerPage) {
+    private CollectionModel<EntityModel<Order>> addLinks(List<Order> orders, int page, int amountPerPage, int pageAmount) {
         List<EntityModel<Order>> entityModels = new ArrayList<>();
         for (Order order : orders) {
             Link selfLink = linkTo(OrderController.class)
@@ -94,13 +93,11 @@ public class OrderController {
             entityModels.add(model);
         }
         CollectionModel<EntityModel<Order>> collection = CollectionModel.of(entityModels);
-        addPagingLinks(collection, page, amountPerPage);
+        addPagingLinks(collection, page, amountPerPage, pageAmount);
         return collection;
     }
 
-    private void addPagingLinks(CollectionModel<EntityModel<Order>> collection, int page, int amountPerPage) {
-        long amount = orderService.countAll();
-        int pageAmount = (int) ((amount + amountPerPage - 1) / amountPerPage);
+    private void addPagingLinks(CollectionModel<EntityModel<Order>> collection, int page, int amountPerPage, int pageAmount) {
         if (page > 1) {
             Link previous = linkTo(methodOn(OrderController.class)
                     .findAll(page - 1, amountPerPage))

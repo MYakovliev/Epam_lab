@@ -1,12 +1,18 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.data.LoginData;
+import com.epam.esm.data.RegistrationData;
+import com.epam.esm.entity.Role;
 import com.epam.esm.entity.User;
+import com.epam.esm.security.JwtProvider;
 import com.epam.esm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -20,25 +26,43 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/users")
 public class UserController {
     private UserService userService;
+    private JwtProvider jwtProvider;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JwtProvider jwtProvider) {
         this.userService = userService;
+        this.jwtProvider = jwtProvider;
     }
 
     @PostMapping
-    public EntityModel<User> create(@RequestBody User user, Locale locale){
-        long id = userService.create(user);
-        User found = userService.findById(id, locale);
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public EntityModel<User> create(@RequestBody RegistrationData registrationData, Locale locale) {
+        User user = new User(0, registrationData.getName(), registrationData.getLogin(),
+                registrationData.getPassword(), new Role(1, "USER"));
+        User found =  userService.create(user);
         return EntityModel.of(found);
+    }
+
+    @PostMapping("/signup")
+    public String signup(@RequestBody RegistrationData registrationData, Locale locale){
+        User user = new User(0, registrationData.getName(), registrationData.getLogin(),
+                registrationData.getPassword(), new Role(1, "USER"));
+        User found = userService.create(user);
+        return jwtProvider.createToken(found.getLogin(), found.getRole());
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestBody LoginData loginData){
+        User existingUser = userService.authenticate(loginData.getLogin(), loginData.getPassword());
+        return jwtProvider.createToken(existingUser.getLogin(), existingUser.getRole());
     }
 
     @GetMapping
     public CollectionModel<EntityModel<User>> findAll(@RequestParam(name = "search", required = false) String name,
-                                                       @RequestParam(name = "page", required = false, defaultValue = "1") int page,
-                                                       @RequestParam(name = "amount", required = false, defaultValue = "20") int amountPerPage) {
-        List<User> result = userService.findAll(name, page, amountPerPage);
-        return addLinks(result, name, page, amountPerPage);
+                                                      @RequestParam(name = "page", required = false, defaultValue = "1") int page,
+                                                      @RequestParam(name = "amount", required = false, defaultValue = "20") int amountPerPage) {
+        Page<User> result = userService.findAll(name, page, amountPerPage);
+        return addLinks(result.getContent(), name, page, amountPerPage, result.getTotalPages());
     }
 
     @GetMapping("/{id}")
@@ -53,7 +77,8 @@ public class UserController {
         return HttpStatus.OK;
     }
 
-    private CollectionModel<EntityModel<User>> addLinks(List<User> users, String name, int page, int amountPerPage) {
+    private CollectionModel<EntityModel<User>> addLinks(List<User> users, String name, int page,
+                                                        int amountPerPage, int pageAmount) {
         List<EntityModel<User>> entityModels = new ArrayList<>();
         for (User user : users) {
             Link selfLink = linkTo(UserController.class)
@@ -64,13 +89,13 @@ public class UserController {
             entityModels.add(model);
         }
         CollectionModel<EntityModel<User>> collection = CollectionModel.of(entityModels);
-        addPagingLinks(collection, name, page, amountPerPage);
+        addPagingLinks(collection, name, page, amountPerPage, pageAmount);
         return collection;
     }
 
-    private void addPagingLinks(CollectionModel<EntityModel<User>> collection, String name, int page, int amountPerPage) {
-        long amount = userService.countAll(name);
-        int pageAmount = (int) ((amount + amountPerPage - 1) / amountPerPage);
+    private void addPagingLinks(CollectionModel<EntityModel<User>> collection, String name, int page,
+                                int amountPerPage, int pageAmount) {
+        name = name != null ? name : "";
         if (page > 1) {
             Link previous = linkTo(methodOn(UserController.class)
                     .findAll(name, page - 1, amountPerPage))

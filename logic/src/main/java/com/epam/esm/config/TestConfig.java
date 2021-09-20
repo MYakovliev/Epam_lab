@@ -6,6 +6,8 @@ import org.springframework.context.annotation.*;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.sql.DataSource;
 
@@ -16,6 +18,8 @@ import javax.sql.DataSource;
 public class TestConfig {
     private static final Logger logger = LogManager.getLogger();
     private static final String PACKAGES_TO_SCAN = "com.epam.esm";
+
+
 
     @Bean
     public DataSource dataSource(){
@@ -30,5 +34,10 @@ public class TestConfig {
         factory.setDataSource(dataSource);
         factory.setPackagesToScan(PACKAGES_TO_SCAN);
         return factory;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder(12);
     }
 }

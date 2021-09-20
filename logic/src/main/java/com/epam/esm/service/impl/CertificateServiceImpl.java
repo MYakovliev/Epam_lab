@@ -1,75 +1,100 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.CertificateDao;
+import com.epam.esm.repository.CertificateRepository;
 import com.epam.esm.data.CertificateSelectionData;
 import com.epam.esm.entity.Certificate;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.exception.ServiceException;
 import com.epam.esm.util.ErrorCode;
+import com.epam.esm.util.SortMode;
+import com.epam.esm.util.SortParameter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.*;
+
+import static com.epam.esm.util.SortMode.ASC;
 
 @Service
 public class CertificateServiceImpl implements CertificateService {
-
+    private static final String ANY_SQL_SYMBOL = "%";
     private static final String ID_NOT_FOUND_MESSAGE = "not_found_id_certificate";
     private static final int NOT_FOUND_ID_ERROR_CODE = ErrorCode.NOT_FOUND_ID.getCode();
-    private CertificateDao certificateDao;
-    @Autowired
     private MessageSource messageSource;
+    private CertificateRepository certificateRepository;
     private static final Logger logger = LogManager.getLogger();
 
-
     @Autowired
-    public CertificateServiceImpl(CertificateDao certificateDao) {
-        this.certificateDao = certificateDao;
+    public CertificateServiceImpl(MessageSource messageSource, CertificateRepository certificateRepository) {
+        this.messageSource = messageSource;
+        this.certificateRepository = certificateRepository;
     }
 
-
     @Override
-    public long create(Certificate certificate) {
+    @Transactional
+    public Certificate create(Certificate certificate) {
         Date now = new Date();
         certificate.setCreateDate(now);
         certificate.setLastUpdateDate(now);
         logger.info(certificate);
-        return certificateDao.create(certificate);
+        return certificateRepository.save(certificate);
     }
 
 
     @Override
-    public void update(Certificate certificate) {
-        certificateDao.update(certificate);
+    public Certificate update(Certificate certificate) {
+        return certificateRepository.save(certificate);
     }
 
 
     @Override
     public void delete(long certificateId) {
-        certificateDao.delete(certificateId);
+        certificateRepository.deleteById(certificateId);
     }
 
     @Override
     public Certificate findById(long certificateId, Locale locale) {
-        return certificateDao.findById(certificateId)
-                .orElseThrow(()-> new ServiceException(NOT_FOUND_ID_ERROR_CODE,
+        return certificateRepository.findById(certificateId)
+                .orElseThrow(() -> new ServiceException(NOT_FOUND_ID_ERROR_CODE,
                         messageSource.getMessage(ID_NOT_FOUND_MESSAGE, new Object[]{certificateId}, locale))
-        );
+                );
     }
 
     @Override
-    public List<Certificate> findAll(CertificateSelectionData selectionData) {
-        int page = selectionData.getPage();
+    public Page<Certificate> findAll(CertificateSelectionData selectionData) {
+        int page = selectionData.getPage() - 1;
         int amount = selectionData.getAmount();
-        int start = (page - 1) * amount;
-        return certificateDao.findAll(selectionData, start);
+        Sort sort = Sort.by(creatingOrdering(selectionData.getSorting()));
+        Pageable pageable = PageRequest.of(page, amount, sort);
+        Page<Certificate> certificatePage;
+        if (!selectionData.getTags().isEmpty()) {
+            certificatePage = certificateRepository.findAllByParametersWithTags(selectionData.getSearch(),
+                    selectionData.getTags(), selectionData.getTags().size(), pageable);
+        } else {
+            certificatePage = certificateRepository.findAllByNameLikeOrDescriptionLike(
+                    ANY_SQL_SYMBOL + selectionData.getSearch() + ANY_SQL_SYMBOL,
+                    ANY_SQL_SYMBOL + selectionData.getSearch() + ANY_SQL_SYMBOL, pageable);
+        }
+        return certificatePage;
     }
 
-    @Override
-    public long countAll(CertificateSelectionData selectionData) {
-        return certificateDao.countAll(selectionData);
+    private List<Sort.Order> creatingOrdering(Map<SortParameter, SortMode> sorting) {
+        List<Sort.Order> orders = new ArrayList<>();
+        if (!sorting.isEmpty()) {
+            for (Map.Entry<SortParameter, SortMode> pair : sorting.entrySet()) {
+                String field = pair.getKey().getField();
+                SortMode mode = pair.getValue();
+                orders.add(mode == ASC ? Sort.Order.asc(field) : Sort.Order.desc(field));
+            }
+        }
+        return orders;
     }
 }
