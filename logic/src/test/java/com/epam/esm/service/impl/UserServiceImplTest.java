@@ -37,7 +37,7 @@ class UserServiceImplTest {
         toReturn.setId(expected);
         toReturn.setPassword("password");
         when(userRepository.save(toReturn)).thenReturn(toReturn);
-        long actual = userService.create(toReturn).getId();
+        long actual = userService.create(toReturn, Locale.ENGLISH).getId();
         assertEquals(expected, actual);
     }
 

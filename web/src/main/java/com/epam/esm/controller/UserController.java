@@ -39,7 +39,7 @@ public class UserController {
     public EntityModel<User> create(@RequestBody RegistrationData registrationData, Locale locale) {
         User user = new User(0, registrationData.getName(), registrationData.getLogin(),
                 registrationData.getPassword(), new Role(1, "USER"));
-        User found =  userService.create(user);
+        User found =  userService.create(user, locale);
         return EntityModel.of(found);
     }
 
@@ -47,7 +47,7 @@ public class UserController {
     public String signup(@RequestBody RegistrationData registrationData, Locale locale){
         User user = new User(0, registrationData.getName(), registrationData.getLogin(),
                 registrationData.getPassword(), new Role(1, "USER"));
-        User found = userService.create(user);
+        User found = userService.create(user, locale);
         return jwtProvider.createToken(found.getLogin(), found.getRole());
     }
 

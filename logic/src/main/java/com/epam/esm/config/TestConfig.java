@@ -3,6 +3,7 @@ package com.epam.esm.config;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.*;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -14,6 +15,7 @@ import javax.sql.DataSource;
 @Configuration
 @ComponentScan("com.epam.esm")
 @Profile("test")
+@EnableJpaRepositories(basePackages = "com.epam.esm")
 @PropertySource("classpath:application-test.properties")
 public class TestConfig {
     private static final Logger logger = LogManager.getLogger();
@@ -29,7 +31,7 @@ public class TestConfig {
     }
 
     @Bean
-    public LocalSessionFactoryBean sessionFactory(DataSource dataSource){
+    public LocalSessionFactoryBean entityManagerFactory(DataSource dataSource){
         LocalSessionFactoryBean factory = new LocalSessionFactoryBean();
         factory.setDataSource(dataSource);
         factory.setPackagesToScan(PACKAGES_TO_SCAN);

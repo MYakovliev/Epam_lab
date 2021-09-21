@@ -27,7 +27,10 @@ public class UserServiceImpl implements UserService {
     private static final String ANY_SQL_SYMBOL = "%";
     private static final String NOT_FOUND_SUPER_USER_MESSAGE = "not_found_super_user";
     private static final String ID_NOT_FOUND_MESSAGE = "not_found_id_user";
+    private static final String ALREADY_EXISTS = "already_exists_user";
     private static final int NOT_FOUND_ID_ERROR_CODE = ErrorCode.NOT_FOUND_ID.getCode();
+    private static final int INVALID_CREDENTIALS_ERROR_CODE = ErrorCode.INVALID_CREDENTIALS.getCode();
+    private static final int ALREADY_EXISTS_USER_ERROR_CODE = ErrorCode.ALREADY_EXISTS_USER.getCode();
     private static final int NOT_FOUND_SUPER_USER_ERROR_CODE = ErrorCode.NO_SUPER_USER.getCode();
     private MessageSource messageSource;
     private PasswordEncoder passwordEncoder;
@@ -45,7 +48,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User create(User user) {
+    public User create(User user, Locale locale) {
+        String login = user.getLogin();
+        if (userRepository.findByLogin(login).isPresent()){
+            throw new ServiceException(ALREADY_EXISTS_USER_ERROR_CODE,
+                    messageSource.getMessage(ALREADY_EXISTS, new Object[]{}, locale)
+            );
+        }
         String password = passwordEncoder.encode(user.getPassword());
         user.setPassword(password);
         return userRepository.save(user);
@@ -95,7 +104,7 @@ public class UserServiceImpl implements UserService {
             Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, password));
             logger.info("authentication:{}", authenticate);
         } catch (AuthenticationException exception) {
-            throw new ServiceException(40401, "invalid login or password");
+            throw new ServiceException(INVALID_CREDENTIALS_ERROR_CODE, "invalid login or password");
         }
         return userRepository.findByLogin(login).orElseThrow(
                 ()->new ServiceException(40401)

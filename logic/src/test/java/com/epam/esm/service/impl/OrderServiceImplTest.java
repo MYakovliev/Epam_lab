@@ -35,8 +35,13 @@ class OrderServiceImplTest {
         long expected = 4;
         Order toReturn = new Order();
         toReturn.setId(expected);
-        when(orderRepository.save(new Order())).thenReturn(toReturn);
-        long actual = orderService.create(new Order()).getId();
+        Order param = new Order();
+        Certificate certificate = new Certificate(1, "", "", BigDecimal.ONE, 12);
+        param.setCertificate(certificate);
+        param.setOrderTime(new Date());
+        param.setPrice(certificate.getPrice());
+        when(orderRepository.save(param)).thenReturn(toReturn);
+        long actual = orderService.create(param).getId();
         assertEquals(expected, actual);
     }
 
