@@ -22,8 +22,8 @@ public class UserDetailsServices implements UserDetailsService {
     JwtProvider jwtProvider;
 
     @Override
-    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        User user = userRepository.findByLogin(s).orElseThrow(()->new ServiceException(ErrorCode.NOT_FOUND_ID.getCode()));
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+        User user = userRepository.findByLogin(login).orElseThrow(()->new ServiceException(ErrorCode.NOT_FOUND_ID.getCode()));
         return withUsername(user.getLogin())
                 .password(user.getPassword())
                 .authorities(user.getRole())

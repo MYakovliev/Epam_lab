@@ -14,6 +14,8 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 
     Optional<User> findByLogin(String login);
 
+    boolean existsByLogin(String login);
+
     @Query(nativeQuery = true,
             value = "SELECT user.id, user.name, user.login, user.password FROM user " +
                     "    INNER JOIN orders ON orders.user_id=user.id GROUP BY user.id " +

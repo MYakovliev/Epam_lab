@@ -78,7 +78,12 @@ public class UserServiceImpl implements UserService {
     public void delete(long userId) {
         userRepository.deleteById(userId);
     }
-    
+
+    @Override
+    public boolean existsByLogin(String login) {
+        return userRepository.existsByLogin(login);
+    }
+
     @Override
     public User findSuperUser(Locale locale) {
         return userRepository.findSuperUser().orElseThrow(

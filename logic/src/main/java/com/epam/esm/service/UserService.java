@@ -14,6 +14,8 @@ public interface UserService {
 
     void delete(long userId);
 
+    boolean existsByLogin(String login);
+
     User findSuperUser(Locale locale);
 
     User findByLogin(String login);
